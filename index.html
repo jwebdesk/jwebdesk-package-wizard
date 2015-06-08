@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+<!-- // TODO: read this https://github.com/ember-addons/bootstrap-for-ember  -->    
+<head>
+    <meta charset="utf-8">
+    <title>Jwebdesk Package Wizard</title>
+    <script src="http://jwebdesk.com/js/thirdparty/require.js" 
+            data-main="http://jwebdesk.com/js/loader.js" 
+            repository="http://jwebdesk.com/jwebdesk.php" 
+            rootpath="http://jwebdesk.com"
+            ></script>
+    <script src="js/myapp.js"></script>
+</head>
+<body>
+    <script type="text/x-handlebars">
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                {{#link-to 'index' class='navbar-brand'}}Jwebdesk Package Wizard{{/link-to}}
+              </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        {{#unless isPending}}
+                            {{#if jw_user}}
+                                <li>{{#link-to 'package'       current-when="package"}}New Package{{/link-to}}</li>                        
+                            {{/if}}
+                        {{/unless}}
+                    </ul>
+              </div>
+            </div>
+        </nav>
+        {{outlet}}
+    </script>
+
+    <script type="text/x-handlebars" id="index">
+        
+        <div class="jumbotron vapaee">
+            <div class="container text-center">
+                <h1>Welcome</h1>
+            </div>
+        </div>     
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Wizard</h2>
+                    <p>
+                        This wizard tool will guide you thru the necessary steps to create a new package for the jwebdesk platform.
+                    </p>                    
+                    {{#if isPending}}
+                        <p>Connecting...</p>
+                    {{else}}
+                        {{#if jw_user}}
+                            <p>{{#link-to 'package'   class="btn btn-default"}}Create Package{{/link-to}}</p>
+                        {{else}}
+                            <p class="text-danger">You have to be logged in jwebdesk in order to create a package</p>
+                        {{/if}}
+                    {{/if}}                    
+                </div>                
+            </div>
+        </div>
+    </script>
+    
+    <!-- ----------------------------------------------------------------------------------------- -->
+    <script type="text/x-handlebars" id="package" >
+        <!-- div class="col-md-8"-->
+            <div class="container">               
+                <div class="row">
+                    <div class="col-md-3 col-lg-2">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><strong>Sections</strong></div>                        
+                            <div class="list-group">                            
+                                {{#link-to 'package.index' class="list-group-item"}}1. Welcome{{/link-to}}
+                                {{#link-to 'package.id' class="list-group-item"}}2. Package ID{{/link-to}}
+                                {{#link-to 'package.code' class="list-group-item"}}3. Source Code{{/link-to}}                            
+                                {{#link-to 'package.deps' class="list-group-item"}}4. Dependencies{{/link-to}}                            
+                                {{#link-to 'package.finish' class="list-group-item"}}5. Finish{{/link-to}}                            
+                            </div>
+                        </div>                        
+                    </div>                            
+                    <div class="col-md-9 col-lg-10">                    
+                        <div class="panel panel-default">
+                            {{outlet}}
+                        </div>                         
+                    </div>                
+                </div>
+            </div>   
+        <!--/div-->
+        <div class="col-md-4" style="display: none">
+            <div class="pull-right">
+            {{textarea value=json cols="85" rows="40" class="code" readonly=true}}
+            </div>
+        </div>        
+    </script>    
+    
+    <!-- ----------------------------------------------------------------------------------------- -->
+    <script type="text/x-handlebars" id="package/index" >
+        <div class="panel-heading"><strong>Create new Package</strong></div>
+        <div class="panel-body">
+            This wizard tool will guide you thru the necessary steps to create a new package for the jwebdesk platform.<br>
+            Click Start button.
+        </div>
+        <div class="panel-footer">
+            <ul class="pager">              
+                <li class="next">{{#link-to 'package.id' class="list-group-item"}}Start{{/link-to}}</li>
+            </ul>            
+        </div>
+        
+    </script>
+    
+    <!-- --------------------------------------------------------------------------------------------------------------------- -->
+    <script type="text/x-handlebars" id="package/id" >
+        <div class="panel-heading"><strong>Package ID: {{name}}</strong></div>
+        <div class="panel-body">
+            
+            <div class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="email">Package Name:</label>
+                    <div class="col-sm-10">
+                        {{input type="text" value=name class="form-control" placeholder="package name" }}                        
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="email">Description:</label>
+                    <div class="col-sm-10">
+                        {{input type="text" value=brief class="form-control" placeholder="brief description" }}                        
+                    </div>
+                </div>
+                {{#if is_app}}
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Title:</label>
+                        <div class="col-sm-10">
+                            {{input type="text" value=title class="form-control" placeholder="application title" }}                        
+                        </div>
+                    </div>
+                {{/if}}
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="pwd">Type:</label>
+                    <div class="col-sm-10">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                {{package_type}}
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                {{#each ptype in type_txt}}
+                                <li role="presentation"><a role="menuitem" {{action "changeType" ptype.val}} tabindex="-1" href="#">{{ptype.name}}</a></li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group"> 
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="checkbox">
+                            <label>
+                                {{input type="checkbox" checked=create_code }}create code
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>            
+            
+        </div>
+        <div class="panel-footer">
+            <ul class="pager">              
+                <li class="previous">{{#link-to 'package.index' class="list-group-item"}}Previous{{/link-to}}</li>
+                <li class="next">{{#link-to 'package.code' class="list-group-item"}}Next{{/link-to}}</li>
+            </ul>            
+        </div>
+    </script>
+        
+    <!-- --------------------------------------------------------------------------------------------------------------------- -->
+    <script type="text/x-handlebars" id="package/code" >
+        <div class="panel-heading"><strong>Source Code: {{name}} {{version}}</strong></div>
+        <div class="panel-body">
+            
+            <div class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="email">Version:</label>
+                    <div class="col-sm-10">
+                        {{input type="text" value=version class="form-control" placeholder="enter package version" }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="pwd">Owner:</label>
+                    <div class="col-sm-10">
+                        {{#if github}}
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                {{owner}}
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                {{#each ident in github}}
+                                <li role="presentation"><a role="menuitem" {{action "changeOwner" ident}} tabindex="-1" href="#">{{ident}}</a></li>
+                                {{/each}}                        
+                            </ul>
+                        </div>
+                        {{else}}
+                        <button type="button" class="btn btn-primary" {{action "githubConnect"}}>
+                            <img src="img/GitHub-Mark-32px.png"><span style="padding-left:10px;">Connect to GitHub </span>
+                        </button>
+                        {{/if}}                          
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="pwd">Template:</label>
+                    <div class="col-sm-10">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                {{#if temp}}
+                                    {{temp}}
+                                {{else}}
+                                    None
+                                {{/if}}
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                {{#each tmp in templates}}
+                                <li role="presentation"><a role="menuitem" {{action "changeTemplate" tmp}} tabindex="-1" href="#">{{tmp}}</a></li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>         
+        
+        
+        
+        
+        
+        </div>
+        <div class="panel-footer">            
+            <ul class="pager">
+                <li class="previous">{{#link-to 'package.id' class="list-group-item"}}Previous{{/link-to}}</li>
+                <li class="next">{{#link-to 'package.deps' class="list-group-item"}}Next{{/link-to}}</li>
+            </ul>            
+        </div>
+    </script>
+        
+    <!-- --------------------------------------------------------------------------------------------------------------------- -->
+    <script type="text/x-handlebars" id="package/deps" >
+        <div class="panel-heading"><strong>Dependencies: {{deps_count}}</strong></div>
+        <div class="panel-body">
+        
+        
+            <div class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="control-label col-sm-2">Find Package:</label>
+                    <div class="col-sm-10">
+                        <div class="input-group">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" {{action "addDependency"}} {{bind-attr disabled=addDepDisabled}}>Add</button>
+                          </span>
+                          {{input type="text" value=new_dep class="form-control" placeholder="enter required package" insert-newline="addDependency" }}
+                        </div>                       
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="pwd">Dependencies:</label>
+                    <div class="col-sm-10">
+                        <ul class="list-group">
+                            {{#each dep in deps}}                        
+                            <li class="list-group-item">
+                                {{dep}}
+                                <div class="pull-right">
+                                    <span class="btn btn-danger btn-xs" {{action "removeDependency" dep}}>
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                    </span>
+                                </div>
+                            </li>
+                            {{/each}}                              
+                        </ul>
+                    </div>
+                </div>
+            </div>          
+        
+        </div>
+        <div class="panel-footer">
+            <ul class="pager">              
+                <li class="previous">{{#link-to 'package.code' class="list-group-item"}}Previous{{/link-to}}</li>
+                <li class="next">{{#link-to 'package.finish' class="list-group-item"}}Next{{/link-to}}</li>
+            </ul>            
+        </div>
+    </script>
+        
+    <!-- --------------------------------------------------------------------------------------------------------------------- -->
+    <script type="text/x-handlebars" id="package/finish" >
+        <div class="panel-heading"><strong>Finish</strong></div>
+        <div class="panel-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <h2 class="col-md-6 col-offset-1">Summary</h2>
+                </div>
+                <div class="row">
+                    <label class="col-md-2 col-offset-1 text-right">Name:</label> 
+                    <span>{{name}}</span>
+                </div>
+                <div class="row">
+                    <label class="col-md-2 col-offset-1 text-right">Version:</label> 
+                    <span>{{version}}</span>
+                </div>
+                <div class="row">
+                    <label class="col-md-2 col-offset-1 text-right">Owner:</label> 
+                    <span>{{owner}}</span>
+                </div>
+                <div class="row">
+                    <label class="col-md-2 col-offset-1 text-right">Type:</label> 
+                    <span>{{package_type}}</span>
+                </div>
+                <div class="row">
+                    <label class="col-md-2 col-offset-1 text-right">Dependencies:</label> 
+                    <span>{{deps_count}}</span>
+                </div>
+                {{#if current_action}}
+                <hr />
+                <div class="row">
+                    <label class="col-md-2 col-offset-1 text-right">Action:</label> 
+                    <span>{{current_action}}</span>
+                </div>
+                <div class="row">
+                    <label class="col-md-2 col-offset-1 text-right">Progress:</label> 
+                    <div class="progress col-md-9" style="padding: 0px;">
+                      <div class="progress-bar progress-bar-success progress-bar-striped active" {{bind-attr style=progressStyle}}></div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>       
+        </div>
+        <div class="panel-footer">
+            <ul class="pager">
+                {{#if isDone}}
+                <li class="next">
+                    <span id="edit-code-btn" class="btn btn-warning" {{action "editCode"}}>Edit Code</span>
+                    <span id="open-app-btn" class="btn btn-success" {{action "openApp"}}>Open App</span>
+                </li>
+                {{else}}
+                <li class="previous">{{#link-to 'package.deps' class="list-group-item"}}Previous{{/link-to}}</li>
+                <li class="next"><span class="btn btn-primary" {{action "githubInitRepo"}}>Finish</span></li>
+                {{/if }}
+            </ul>            
+        </div>
+    </script>
+        
+    
+    
+    <!-- --------------------------------------------------------------------------------------------------------------------- -->
+    <script type="text/x-handlebars" id="opfolders" >
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><strong>opfolders</strong></div>
+                        <div class="panel-body">AAAAAAAAAAAA</div>
+                    </div>
+                </div>               
+            </div>
+        </div>   
+    </script>
+    
+    
+    <!-- ----------------------------------------------------------------------------------------- -->
+    <script type="text/x-handlebars" id="bracketsonline" >
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><strong>bracketsonline</strong></div>
+                        <div class="panel-body">AAAAAAAAAAAA</div>
+                    </div>
+                </div>               
+            </div>
+        </div>   
+    </script>    
+    
+    <!-- ----------------------------------------------------------------------------------------- -->
+    <script type="text/x-handlebars" id="webidents" >
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-lg-2">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><strong>Menu</strong></div>                        
+                        <div class="list-group">
+                            {{#link-to 'webidents.index' class="list-group-item"}}coso{{/link-to}}
+                            {{#link-to 'webidents.run' class="list-group-item"}}coso{{/link-to}}
+                        </div>
+                    </div>                        
+                </div>                            
+                <div class="col-md-9 col-lg-10">                    
+                    <div class="panel panel-default">
+                        {{outlet}}
+                    </div>                         
+                </div>                
+            </div>
+        </div>   
+    </script>    
+    
+    <script type="text/x-handlebars" id="webidents/index" >
+        <div class="panel-heading"><strong>webidents</strong></div>
+        <div class="panel-body">home</div>
+    </script>
+        
+    <script type="text/x-handlebars" id="webidents/run" >
+        <div class="panel-heading"><strong>webidents</strong></div>
+        <div class="panel-body">AAAAAAAAAAAA</div>
+    </script>
+    
+    
+    <!-- ----------------------------------------------------------------------------------------- -->
+    <script type="text/x-handlebars" id="webkoins" >
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-lg-2">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><strong>Menu</strong></div>                        
+                        <div class="list-group">
+                            {{#link-to 'webkoins.index' class="list-group-item"}}coso{{/link-to}}
+                            {{#link-to 'webkoins.run' class="list-group-item"}}coso{{/link-to}}
+                        </div>
+                    </div>                        
+                </div>                            
+                <div class="col-md-9 col-lg-10">                    
+                    <div class="panel panel-default">
+                        {{outlet}}
+                    </div>                         
+                </div>                
+            </div>
+        </div>   
+    </script>    
+    
+    <script type="text/x-handlebars" id="webkoins/index" >
+        <div class="panel-heading"><strong>webkoins</strong></div>
+        <div class="panel-body">home</div>
+    </script>
+        
+    <script type="text/x-handlebars" id="webkoins/run" >
+        <div class="panel-heading"><strong>webkoins</strong></div>
+        <div class="panel-body">AAAAAAAAAAAA</div>
+    </script>
+    
+    
+    <!-- ----------------------------------------------------------------------------------------- -->
+    <script type="text/x-handlebars" id="pixels" >
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-lg-2">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><strong>Menu</strong></div>                        
+                        <div class="list-group">
+                            {{#link-to 'pixels.index' class="list-group-item"}}coso{{/link-to}}
+                            {{#link-to 'pixels.run' class="list-group-item"}}coso{{/link-to}}
+                        </div>
+                    </div>                        
+                </div>                            
+                <div class="col-md-9 col-lg-10">                    
+                    <div class="panel panel-default">
+                        {{outlet}}
+                    </div>                         
+                </div>                
+            </div>
+        </div>   
+    </script>    
+    
+    <script type="text/x-handlebars" id="pixels/index" >
+        <div class="panel-heading"><strong>pixels</strong></div>
+        <div class="panel-body">home</div>
+    </script>
+        
+    <script type="text/x-handlebars" id="pixels/run" >
+        <div class="panel-heading"><strong>pixels</strong></div>
+        <div class="panel-body">AAAAAAAAAAAA</div>
+    </script>
+    
+    
+    
+    
+</body>
+</html>
